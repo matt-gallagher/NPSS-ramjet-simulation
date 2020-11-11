@@ -1,0 +1,80 @@
+MODELNAME = "ramjet1";
+
+// Flight Values
+
+Element FlightConditions AMBIENT {
+	alt = 40000;          // Flight Altitude (ft)
+	MN = 3.0;            // Desired Mach Number
+	Ts = -58.47;            // Ambient Temperature (F)
+	Ps = 3.809;             // Ambient Pressure (psia)
+	W = 300.0;         // Design Mass Flow (lbm/s)
+	Fl_O.switchTransport = "EQUIL";
+}
+
+// Inlet
+
+Element Inlet ENTRY {
+	Fl_I.switchTransport = "EQUIL";
+	Fl_O.switchTransport = "EQUIL";
+}
+
+// Diffuser
+
+Element Diffuser DIFF {
+	dPqP = 0;
+	Fl_I.switchTransport = "EQUIL";
+	Fl_O.switchTransport = "EQUIL";
+}
+
+// FuelStart
+
+Element FuelStart FUELS {
+	fuelType = "Jet-A(L)";
+	LHV = 18400.0;
+}
+
+// Burner
+
+Element Burner BURN {
+	effBase = 1.0;
+	dPqPBase = 0.0;
+	countFuelMax = 250.0;
+	switchBurn = "TEMPERATURE";
+	TtCombOut = 3000.0;
+	Fl_I.switchTransport = "EQUIL";
+	Fl_O.switchTransport = "EQUIL";
+}
+
+// Nozzle
+
+Element Nozzle NOZZ {
+	dPqP = 0.0;
+	PsExhName = "AMBIENT.Fl_O.Ps";
+	switchType = "CONIC";
+	Fl_I.switchTransport = "EQUIL";
+	Fl_O.switchTransport = "EQUIL";
+	Fl_O.MNfroz = 0.0;
+	Fl_Oideal.MNfroz = 0.0;
+}
+
+Element FlowEnd END {
+	Pt = 0.0;
+	Tt = 0.0;
+	W = 0.0;
+	Fl_I.switchTransport = "EQUIL";
+}
+
+// Engine Performance
+
+Element EngPerf PERF {
+
+}
+
+// Link Ports
+
+linkPorts("AMBIENT.Fl_O" , "ENTRY.Fl_I" , "FL0");
+linkPorts("ENTRY.Fl_O" , "DIFF.Fl_I" , "FL1");
+linkPorts("DIFF.Fl_O" , "BURN.Fl_I" , "FL2");
+linkPorts("BURN.Fl_O" , "NOZZ.Fl_I" , "FL3");
+linkPorts("NOZZ.Fl_O" , "END.Fl_I" , "FL4");
+linkPorts("FUELS.Fu_O" , "BURN.Fu_I" , "FL5");

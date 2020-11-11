@@ -1,0 +1,67 @@
+MODELNAME = "Rramjet3_temp";
+
+// Flight Values
+
+Element FlightConditions AMBIENT {
+	alt = 40000.0;          // Flight Altitude (ft)
+	MN = 3.0;            // Desired Mach Number
+	//Ts = -58.47;            // Ambient Temperature (F)
+	//Ps = 3.809;             // Ambient Pressure (psia)
+	W = 230.3;         // Design Mass Flow (lbm/s)
+}
+
+// Inlet
+
+Element Inlet ENTRY {
+}
+
+// Diffuser
+
+Element Diffuser DIFF {
+	dPqP = 0;
+}
+
+// FuelStart
+
+Element FuelStart FUELS {
+	LHV = 18400;
+}
+
+// Burner
+
+Element Burner BURN {
+	effBase = 1.0;
+	dPqPBase = 0.0;
+	countFuelMax = 250;
+	switchBurn = "TEMPERATURE";
+	TtCombOut = 3000.0;
+}
+
+// Nozzle
+
+Element Nozzle NOZZ {
+	dPqP = 0.0;
+	PsExhName = "AMBIENT.Fl_O.Ps";
+	switchType = "CON_DIV";
+}
+
+Element FlowEnd END {
+	Pt = 0;
+	Tt = 0;
+	W = 0;
+}
+
+// Engine Performance
+
+Element EngPerf PERF {
+
+}
+
+// Link Ports
+
+linkPorts("AMBIENT.Fl_O" , "ENTRY.Fl_I" , "FL0");
+linkPorts("ENTRY.Fl_O" , "DIFF.Fl_I" , "FL1");
+linkPorts("DIFF.Fl_O" , "BURN.Fl_I" , "FL2");
+linkPorts("BURN.Fl_O" , "NOZZ.Fl_I" , "FL3");
+linkPorts("NOZZ.Fl_O" , "END.Fl_I" , "FL4");
+linkPorts("FUELS.Fu_O" , "BURN.Fu_I" , "FL5");

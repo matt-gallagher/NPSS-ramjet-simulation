@@ -1,0 +1,51 @@
+
+// Define output stream destination
+OutFileStream case1 {
+    filename = "ramjet3_alt.case1";
+}
+
+// Define desired outputs for CaseRowViewer
+CaseRowViewer Case1 {
+    outStreamHandle = "case1";
+    titleBody = "???????????????????? Run on ???????? at ????????";
+    titleVars = { "VERSION",                 "date",     "timeOfDay" }
+    variableList = { "AMBIENT.alt=Alt",
+                     "AMBIENT.MN:?.????=Mn",
+                     "AMBIENT.dTs:???.??=dTs",
+                     "BURN.Wfuel=Wfuel@lbm/min",
+                     "BURN.TtCombOut:????.??=BOT@F",
+                     "PERF.Fn:?????.?=Fn"
+    }
+}
+
+// Attach post execution processor to sequence
+solver.postExecutionSequence.append( "Case1" );
+
+// Run on-design case
+//setOption( "switchDes", "DESIGN" );
+autoSolverSetup();
+CASE++;
+run();
+
+// Set up off-design case
+setOption( "switchDes", "OFFDESIGN" );
+autoSolverSetup();
+
+// Loop altitude over desired range
+for (AMBIENT.alt = 25000.0; AMBIENT.alt < 85000.0; AMBIENT.alt += 10000.0) {
+    for (AMBIENT.MN = 1.0; AMBIENT.MN < 7.0; AMBIENT.MN += 0.1) {
+    CASE++;
+    run();
+    //cout << "For Mach of ";
+    cout << AMBIENT.MN;
+    cout << "   ";
+    cout << PERF.Fn/AMBIENT.W;
+    cout << "   ";
+    cout << PERF.SFC;
+    cout << "  \n";
+}
+}
+
+// Send results to outputs (ncp.view and case1)
+ncpView.display();
+Case1.display();
